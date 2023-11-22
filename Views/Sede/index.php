@@ -257,9 +257,13 @@
 	</script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<<<<<<< Updated upstream
 
 
 
+=======
+	<!-- envio de correo cuando se descarta -->
+>>>>>>> Stashed changes
 	<script>
 		$(document).ready(function() {
 			// Agregar un evento al botón "descartar" para que inicie la solicitud AJAX
@@ -286,13 +290,18 @@
 							type: "POST",
 							url: "config/envio.php",
 							data: {
+<<<<<<< Updated upstream
 								destinatario: correo,
 								boton_enviar: boton_enviar
+=======
+								matricula: matricula,
+>>>>>>> Stashed changes
 							},
 							success: function(response) {
 								// Manejar la respuesta del servidor para el correo y matrícula aquí
 								console.log(response);
 
+<<<<<<< Updated upstream
 								// Mostrar una alerta SweetAlert2
 								Swal.fire({
 									title: 'Éxito',
@@ -301,6 +310,48 @@
 								}).then((result) => {
 									// Recargar la página después de hacer clic en OK en la alerta
 									location.href = "index.php";
+=======
+
+								console.log("<?= $data["alumno"]["CorreoE"] ?>");
+								// Obtener para envio de correo 
+								var matricula = "<?= $data["alumno"]["Matricula"] ?>";
+
+								var correo = "<?= $data["alumno"]["CorreoE"] ?>";
+								var sede = "<?= $sede["NombreSede"] ?>";
+								var alumno = "<?= $data["alumno"]["NombreA"]. " ".$data["alumno"]["ApellidoP"]. " ". $data["alumno"]["ApellidoM"]?>";
+								var respuestaSede = "descartado por su perfil";
+								var tipoCorreo = 'rechazado';
+								// Luego, enviar el correo y la matrícula a envio.php
+								$.ajax({
+									type: "POST",
+									url: "config/correoSede.php",
+									data: {
+										destinatario: correo,
+										matricula: matricula,
+										sede: sede,
+										alumno: alumno,
+										respuestaSede: respuestaSede,
+										tipoCorreo: tipoCorreo,
+									},
+									success: function(response) {
+										// Manejar la respuesta del servidor para el correo y matrícula aquí
+										console.log(response);
+
+										// Mostrar una alerta SweetAlert2
+										Swal.fire({
+											title: 'Éxito',
+											text: '¡Envío exitoso!',
+											icon: 'success'
+										}).then((result) => {
+											// Recargar la página después de hacer clic en OK en la alerta
+											location.href = "index.php?c=sedes&a=index";
+										});
+									},
+									error: function() {
+										// Manejar el error para el correo y matrícula aquí, por ejemplo, mostrar un mensaje de error
+										console.log("Error al enviar el correo y la matrícula.");
+									}
+>>>>>>> Stashed changes
 								});
 							},
 							error: function() {
@@ -318,6 +369,13 @@
 		});
 	</script>
 
+<<<<<<< Updated upstream
+=======
+
+
+
+
+>>>>>>> Stashed changes
 	<!-- Script que manda correo de cita y modifica que esta por confirmar si es aceptado o nel -->
 	<script>
 		$(document).ready(function() {
@@ -334,16 +392,25 @@
 					},
 					success: function(response) {
 						// Manejar la respuesta de la primera solicitud aquí
-						console.log("Se modifico");
 
-						// Luego, enviar el formulario a "config/envio.php" después de obtener la respuesta
+						var formData = $("#generarCita").serialize();
+
+						console.log(formData);
+						// Luego, enviar el correo y la matrícula a envio.php
 						$.ajax({
 							type: "POST",
-							url: "config/envio.php",
-							data: $("#generarCita").serialize(), // Serializar los datos del formulario
+							url: "config/correoSede.php",
+							data: formData,
 							success: function(response) {
+<<<<<<< Updated upstream
 								// Manejar la respuesta del servidor para el formulario aquí
 
+=======
+								// Manejar la respuesta del servidor para el correo y matrícula aquí
+								console.log(response);
+
+								// Mostrar una alerta SweetAlert2
+>>>>>>> Stashed changes
 								Swal.fire({
 									title: 'Éxito',
 									text: '¡Envío exitoso!',
@@ -354,8 +421,14 @@
 								});
 							},
 							error: function() {
-								// Manejar el error para el formulario aquí, por ejemplo, mostrar un mensaje de error
-								console.log("Error al enviar el formulario.");
+								console.log("Error al enviar el correo y la matrícula.");
+
+								// Mostrar una alerta SweetAlert2 para el error
+								Swal.fire({
+									title: 'Error',
+									text: 'Hubo un problema al enviar el correo', // Muestra el mensaje de error del servidor
+									icon: 'error'
+								});
 							}
 						});
 					},
@@ -386,8 +459,12 @@
 							<div data-kt-stepper-element="content">
 								<!--begin::Wrapper-->
 								<div class="w-100">
+<<<<<<< Updated upstream
 									<!--end::Input group-->
 									<input type="hidden" class="form-control form-control-solid ps-12" name="destinatario" value="<?php echo $data["alumno"]["CorreoE"]; ?>">
+=======
+									<!-- <input type="hidden" class="form-control form-control-solid ps-12" name="destinatario" value=""> -->
+>>>>>>> Stashed changes
 
 
 									<!--begin::Heading-->
@@ -416,6 +493,7 @@
 											<!--end::Input-->
 										</div>
 										<!--end::Wrapper-->
+<<<<<<< Updated upstream
 
 										<!--end::Input group-->
 										<!--begin::Input group-->
@@ -423,6 +501,62 @@
 											<!--begin::Label-->
 											<label class="required fs-6 fw-semibold mb-2">Asunto</label>
 											<!--end::Label-->
+=======
+									</div>
+									<!--end::Input group-->
+									<!--begin::Input group-->
+									<div class="fv-row mb-8">
+										<!--begin::Label-->
+										<label class="required fs-6 fw-semibold mb-2">Asunto</label>
+										<!--end::Label-->
+										<!--begin::Input-->
+										<textarea required class="form-control form-control-solid" rows="3" name="asunto">Eres candidato para nuestra vacante#</textarea>
+										<!--end::Input-->
+									</div>
+									<!--end::Input group-->
+									<!--begin::Input group-->
+									<div class="fv-row mb-8">
+										<!--begin::Label-->
+										<label class="required fs-6 fw-semibold mb-2">Descripción</label>
+										<!--end::Label-->
+										<!--begin::Input-->
+										<textarea required class="form-control form-control-solid" rows="3" name="mensaje">Nos gustaría invitarte a una entrevista para discutir tu trayectoria profesional y cómo podrías encajar en nuestro equipo.</textarea>
+										<!--end::Input-->
+									</div>
+									<!--end::Input group-->
+									<!--begin::Input group-->
+									<div class="fv-row mb-8">
+										<!--begin::Label-->
+										<label class="required fs-6 fw-semibold mb-2">Dirección</label>
+										<!--end::Label-->
+										<!--begin::Input-->
+										<textarea required class="form-control form-control-solid" rows="3" name="direccion">Lugar donde será la cita.</textarea>
+										<!--end::Input-->
+									</div>
+									<!--end::Input group-->
+									<!--begin::Input group-->
+									<div class="d-flex flex-column mb-7 fv-row">
+										<!--begin::Label-->
+										<label class="required d-flex align-items-center fs-6 fw-semibold form-label mb-2">
+											<span>Entrevistador</span>
+											<span class="ms-1" data-bs-toggle="tooltip" title="Persona que atendera al alumno">
+												<i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
+											</span>
+										</label>
+										<!--end::Label-->
+										<input type="text" required class="form-control form-control-solid" name="entrevistador" />
+									</div>
+									<!--end::Input group-->
+									<!--begin::Input group-->
+									<div class="d-flex flex-column mb-7 fv-row">
+										<!--begin::Label-->
+										<label class="required fs-6 fw-semibold form-label mb-2">Número de teléfono</label>
+										<!--end::Label--><span class="ms-1" data-bs-toggle="tooltip" title="Telefono Persona que atendera al alumno">
+											<i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
+										</span>
+										<!--begin::Input wrapper-->
+										<div class="position-relative">
+>>>>>>> Stashed changes
 											<!--begin::Input-->
 											<textarea class="form-control form-control-solid" rows="3" placeholder="Enter Project Description" name="asunto">Eres candidato para nuestra vacante.</textarea>
 											<!--end::Input-->
@@ -480,6 +614,28 @@
 									</div>
 								</div>
 							</div>
+							<!-- Datos que mandamos -->
+							<!--
+								Fecha y hora;
+								asunto;
+								mensaje;
+								Direccion;
+								Entrevistador;
+								numero de telefono;
+								var matricula = "";
+								var correo = "";
+								var sede = "";
+								var alumno = "Brandon Cara de verga";
+								var respuestaSede = "descartado por su perfil";
+								var tipoCorreo = 'cita';
+							-->
+							<input type="hidden" name="matricula" value="<?= $data["alumno"]["Matricula"]?>">
+							<input type="hidden" name="destinatario" value="<?= $data["alumno"]["CorreoE"]?>">
+							<input type="hidden" name="sede" value="<?=$sede['NombreSede']?>">
+							<input type="hidden" name="alumno" value="<?= $data["alumno"]["NombreA"]. " ".$data["alumno"]["ApellidoP"]. " ". $data["alumno"]["ApellidoM"]?>">
+							<input type="hidden" name="respuestaSede" value=" citado para una entrevista">
+							<input type="hidden" name="tipoCorreo" value="cita">
+
 							<div class="modal-footer">
 								<button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
 								<button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Guardar Cambios</button>

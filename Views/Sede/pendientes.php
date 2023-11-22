@@ -1,3 +1,22 @@
+<<<<<<< Updated upstream
+=======
+<?php
+if (isset($_SESSION['id_usuario']) || isset($_SESSION['name'])) {
+	$idUsuario = $_SESSION['id_usuario'];
+	$name = $_SESSION['name'];
+	if ($name == 'sedes') {
+	} else {
+		// Si no existe la variable de sesión, puede redirigir al usuario a la página de inicio de sesión o realizar otra acción.
+		header('location: index.php');
+		exit; // Detener la ejecución del script
+	}
+} else {
+	// Si no existe la variable de sesión, puede redirigir al usuario a la página de inicio de sesión o realizar otra acción.
+	header('location: index.php');
+	exit; // Detener la ejecución del script
+}
+?>
+>>>>>>> Stashed changes
 <!DOCTYPE html>
 <html lang="en">
 
@@ -130,6 +149,20 @@
 														<th class="text-light min-w-50px">Acciones</th>
 													</tr>
 												</thead>
+<<<<<<< Updated upstream
+=======
+												<style>
+													.textoTabla {
+														color: white !important;
+														text-align: center;
+
+													}
+
+													th {
+														text-align: center;
+													}
+												</style>
+>>>>>>> Stashed changes
 												<tbody class="fw-semibold text-gray-600">
 													<?php
 													if (isset($data)) {
@@ -166,10 +199,16 @@
 																					<div class="p-3">
 																						<!--begin:Menu item-->
 																						<div class="menu-item p-0 m-0">
-																							<input type="hidden" id="matricula" value="<?= $row["Matricula"] ?>">
-																							<input type="hidden" id="sede" value="<?= $sede["NombreSede"] ?>">
-																							<input type="hidden" id="destinatario" value="<?= $row["CorreoE"] ?>">
-																							<input type="hidden" id="aceptado" value="true">
+																							<form id="aceptarForm">
+																								<input type="hidden" name="respuestaSede" value="aceptado para ser parte del equipo">
+																								<input type="hidden" id="matricula" name="matricula" value="<?= $row["Matricula"] ?>">
+																								<input type="hidden" id="sede" name="sede" value="<?= $sede["NombreSede"] ?>">
+																								<input type="hidden" id="destinatario" name="destinatario" value="<?= $row["CorreoE"] ?>">
+																								<input type="hidden" name="alumno" value="<?= $row["NombreA"] . " " . $row["ApellidoP"] . " " . $row["ApellidoM"] ?>">
+																								<input type="hidden" id="tipoCorreo" name="tipoCorreo" value="aceptado">
+																							</form>
+
+
 																							<!--begin:Menu link-->
 																							<a id="aceptarAlumno" class="menu-link ">
 																								<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
@@ -192,19 +231,22 @@
 																							<!-- Datos a mandadr por post -->
 																							<!-- Formulario para enviar los datos -->
 																							<form id="descartarForm">
+
+																								<input type="hidden" name="respuestaSede" value="descartado">
 																								<input type="hidden" id="matricula" name="matricula" value="<?= $row["Matricula"] ?>">
 																								<input type="hidden" id="sede" name="sede" value="<?= $sede["NombreSede"] ?>">
 																								<input type="hidden" id="destinatario" name="destinatario" value="<?= $row["CorreoE"] ?>">
-																								<input type="hidden" id="aceptado" name="aceptado" value="false">
+																								<input type="hidden" name="alumno" value="<?= $row["NombreA"] . " " . $row["ApellidoP"] . " " . $row["ApellidoM"] ?>">
+																								<input type="hidden" id="tipoCorreo" name="tipoCorreo" value="rechazado">
 																								<a id="descartarAlumno" class="menu-link ">
-																								<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
-																									<i class="fas fa-times text-danger fs-1"></i>
-																								</span>
+																									<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
+																										<i class="fas fa-times text-danger fs-1"></i>
+																									</span>
 
-																								<span class="d-flex flex-column">
-																									<span class="fs-6 fw-bold text-gray-800">Descartar</span>
-																								</span>
-																							</a>
+																									<span class="d-flex flex-column">
+																										<span class="fs-6 fw-bold text-gray-800">Descartar</span>
+																									</span>
+																								</a>
 																							</form>
 
 																							<!--end:Menu link-->
@@ -277,7 +319,7 @@
 	<!--end::App-->
 	<!--begin::Drawers-->
 	<!--begin::Scrolltop-->
-	<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+	<div id="kt_scrolltop" class="scro<lltop" data-kt-scrolltop="true">
 		<i class="ki-outline ki-arrow-up"></i>
 	</div>
 	<!--end::Scrolltop-->
@@ -292,9 +334,9 @@
 		$(document).ready(function() {
 			$('#aceptarAlumno').click(function() {
 				var matricula = $('#matricula').val(); // Reemplaza '12345' con la matrícula que deseas enviar
-				var destinatario = $('#destinatario').val();
-				var sede = $('#sede').val();
-				var aceptado = $('#aceptado').val();
+
+				var formData = $("#aceptarForm").serialize();
+
 				console.log(matricula);
 				$.ajax({
 					type: 'POST',
@@ -307,15 +349,11 @@
 						console.log('Respuesta del servidor (Primera solicitud): ' + response);
 						// Realiza acciones adicionales aquí después de una respuesta exitosa
 						// Ahora, realiza la segunda solicitud AJAX
+						console.log(formData);
 						$.ajax({
 							type: 'POST',
-							url: 'config/correoAceptacion.php', // Reemplaza 'segunda_solicitud.php' con la URL de la segunda solicitud
-							data: {
-								matricula: matricula,
-								sede: sede,
-								destinatario: destinatario,
-								aceptado: aceptado
-							},
+							url: 'config/correoSede.php', // Reemplaza 'segunda_solicitud.php' con la URL de la segunda solicitud
+							data: formData,
 							success: function(secondResponse) {
 								// La segunda solicitud AJAX fue exitosa
 								console.log('Respuesta del servidor (Segunda solicitud): ' + secondResponse);
@@ -352,8 +390,8 @@
 	<script>
 		$(document).ready(function() {
 			$('#descartarAlumno').click(function() {
-				 var formData = $('#descartarForm').serialize(); // Serializa los datos del formulario
-				 var matricula = $('#matricula').val(); // Reemplaza '12345' con la matrícula que deseas enviar
+				var formData = $('#descartarForm').serialize(); // Serializa los datos del formulario
+				var matricula = $('#matricula').val(); // Reemplaza '12345' con la matrícula que deseas enviar
 				$.ajax({
 					type: 'POST',
 					url: '?c=sedes&a=descartarAlumno', // Reemplaza 'primera_solicitud.php' con la URL de la primera solicitud
@@ -368,9 +406,9 @@
 						// Ahora, realiza la segunda solicitud AJAX
 						$.ajax({
 							type: 'POST',
-							url: 'config/correoAceptacion.php', // Reemplaza 'segunda_solicitud.php' con la URL de la segunda solicitud
+							url: 'config/correoSede.php', // Reemplaza 'segunda_solicitud.php' con la URL de la segunda solicitud
 							data: formData,
-							
+
 							success: function(secondResponse) {
 								// La segunda solicitud AJAX fue exitosa
 								console.log('Respuesta del servidor (Segunda solicitud): ' + secondResponse);
