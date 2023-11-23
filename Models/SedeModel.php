@@ -41,43 +41,102 @@ class Sede
 
 	public function modificar($id_sede, $id, $nombresede, $direccion, $correo, $telefono, $tiposede)
 	{
-		// Consulta SQL para actualizar los datos
+		// Prepara la consulta SQL para actualizar los datos en la tabla "sede"
 		$sql = "UPDATE sede 
-                SET IdSede= $id,
-                    NombreSede='$nombresede', 
-                    Dirección='$direccion', 
-                    CorreoContacto='$correo', 
-                    Telefono='$telefono', 
-                    tiposede='$tiposede' 
-                WHERE IdSede=$id_sede";
-		$resultado = $this->db->query($sql);
+            SET IdSede=?, 
+                NombreSede=?, 
+                Dirección=?, 
+                CorreoContacto=?, 
+                Telefono=?, 
+                tiposede=? 
+            WHERE IdSede=?";
+
+		// Prepara la sentencia
+		$stmt = $this->db->prepare($sql);
+
+		// Vincula los parámetros
+		$stmt->bind_param("isssisi", $id, $nombresede, $direccion, $correo, $telefono, $tiposede, $id_sede);
+
+		// Ejecuta la sentencia
+		$resultado = $stmt->execute();
+
+		// Cierra la sentencia
+		$stmt->close();
 
 		if ($resultado) {
-			// Consulta SQL para actualizar los datos
+			// Prepara la consulta SQL para actualizar los datos en la tabla "usuarios"
 			$sql2 = "UPDATE usuarios 
-			SET IdUsuario= $id
-			WHERE IdUsuario=$id_sede";
-			$resultado2 = $this->db->query($sql2);
+                SET IdUsuario=?, CorreoE=? 
+                WHERE IdUsuario=?";
+
+			// Prepara la sentencia
+			$stmt2 = $this->db->prepare($sql2);
+
+			// Vincula los parámetros
+			$stmt2->bind_param("iss", $id, $correo, $id_sede);
+
+			// Ejecuta la sentencia
+			$resultado2 = $stmt2->execute();
+
+			// Cierra la sentencia
+			$stmt2->close();
 		}
+
+		return $resultado && $resultado2;
 	}
 
+
+	// Modelo
 	public function new_sede($matricula, $nombre_sede, $direccion, $correo, $telefono, $tiposede, $contraseña, $nombre, $apellidop, $apellidom, $logo)
 	{
-		$query = mysqli_query($this->db, "INSERT INTO sede (IdSede, NombreSede, Dirección, CorreoContacto, Telefono, tiposede, logo) VALUES ( '$matricula','$nombre_sede', '$direccion', '$correo', '$telefono', '$tiposede', '$logo')");
+		try {
+			// Verifica si $logoContenido está definido y no es nulo
+			$logoContenido = isset($logo) ? mysqli_real_escape_string($this->db, $logo) : null;
 
-		if ($query) {
-			$query1 = mysqli_query($this->db, "SELECT IdSede FROM sede WHERE CorreoContacto = '$correo'");
-			$sede = mysqli_fetch_array($query1);
-			$id_sede = $sede["IdSede"];
+			// Verifica si ya existe una sede con la misma matrícula
+			$matriculaExists = mysqli_query($this->db, "SELECT IdSede FROM sede WHERE IdSede = '$matricula'");
 
-			$con_MD5 = md5($contraseña);
-
-			$query2 = mysqli_query($this->db, "INSERT INTO usuarios (IdUsuario, CorreoE, Contraseña, IdRol, NombreU, APaternoU, AMaternoU) VALUES ('$id_sede', '$correo', '$con_MD5', 5, '$nombre', '$apellidop', '$apellidom')");
-
-			if ($query2) {
+			if (mysqli_num_rows($matriculaExists) > 0) {
+				// La matrícula ya existe, muestra una alerta de JavaScript
+				echo "<script>alert('La matrícula ya existe.');</script>";
+				return; // Termina la función sin realizar la inserción
 			}
+
+			// Continúa con la inserción si la matrícula no existe
+			$query = mysqli_query($this->db, "INSERT INTO sede (IdSede, NombreSede, Dirección, CorreoContacto, Telefono, tiposede, logo) VALUES ('$matricula','$nombre_sede', '$direccion', '$correo', '$telefono', '$tiposede', '$logoContenido')");
+
+			if (!$query) {
+				// Muestra el mensaje de error de MySQL
+				echo "Error MySQL: " . mysqli_error($this->db);
+			}
+
+			if ($query) {
+				$query1 = mysqli_query($this->db, "SELECT IdSede FROM sede WHERE CorreoContacto = '$correo'");
+				$sede = mysqli_fetch_array($query1);
+				$id_sede = $sede["IdSede"];
+
+				$con_MD5 = md5($contraseña);
+
+				$query2 = mysqli_query($this->db, "INSERT INTO usuarios (IdUsuario, CorreoE, Contraseña, IdRol, NombreU, APaternoU, AMaternoU) VALUES ('$id_sede', '$correo', '$con_MD5', 5, '$nombre', '$apellidop', '$apellidom')");
+
+				if ($query2) {
+					// Procesar si la segunda consulta fue exitosa
+				}
+			} else {
+				// Manejar el error, por ejemplo, imprimir el error SQL
+				echo mysqli_error($this->db);
+			}
+		} catch (mysqli_sql_exception $exception) {
+			// Manejar la excepción específica de MySQL
+			echo "Error al procesar la consulta: " . $exception->getMessage();
+
+			// Puedes mostrar un mensaje específico relacionado con la imagen aquí
+			echo "<script>alert('Error al procesar la imagen.');</script>";
 		}
 	}
+
+
+
 
 	/*Consulta para obtener sedes por carrera y proceso 
 		Utilizada en AlumnosController
@@ -103,29 +162,29 @@ class Sede
 	}
 
 	public function obtenerSedes()
-      {
-            $vacantes = array();
+	{
+		$vacantes = array();
 
-            $query = "SELECT * FROM sede";
+		$query = "SELECT * FROM sede";
 
-            $result = mysqli_query($this->db, $query);
+		$result = mysqli_query($this->db, $query);
 
-            if ($result) {
-                  while ($row = mysqli_fetch_assoc($result)) {
-                        $vacantes[] = array(
-                              "Matricula" => $row["IdSede"],
-                              "Nombre sede" => $row["NombreSede"],
-                              "Dirección" => $row["Dirección"],
-                              "Correo" => $row["CorreoContacto"],
-                              "Telefono" => $row["Telefono"],
-                              "Tipo de sede" => $row["tiposede"]
-                        );
-                  }
-                  // Devolver vacantes como JSON
-                  return json_encode($vacantes);
-            } else {
-                  // Manejo de errores o mensaje de error
-                  return json_encode(array("error" => "Error al obtener las vacantes"));
-            }
-      }
+		if ($result) {
+			while ($row = mysqli_fetch_assoc($result)) {
+				$vacantes[] = array(
+					"Matricula" => $row["IdSede"],
+					"Nombre sede" => $row["NombreSede"],
+					"Dirección" => $row["Dirección"],
+					"Correo" => $row["CorreoContacto"],
+					"Telefono" => $row["Telefono"],
+					"Tipo de sede" => $row["tiposede"]
+				);
+			}
+			// Devolver vacantes como JSON
+			return json_encode($vacantes);
+		} else {
+			// Manejo de errores o mensaje de error
+			return json_encode(array("error" => "Error al obtener las vacantes"));
+		}
+	}
 }

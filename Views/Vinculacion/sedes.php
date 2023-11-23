@@ -145,10 +145,10 @@ License: For each use you must have a valid license purchased only from above li
                                             <!--end::Nav item-->
 
                                             <!--begin::Nav item-->
-											<li class="nav-item mt-2">
-												<a class="nav-link text-active-primary ms-0 me-10 py-5" href="?c=vinculacion&a=index_">Validación de documentos</a>
-											</li>
-											<!--end::Nav item-->
+                                            <li class="nav-item mt-2">
+                                                <a class="nav-link text-active-primary ms-0 me-10 py-5" href="?c=vinculacion&a=index_">Validación de documentos</a>
+                                            </li>
+                                            <!--end::Nav item-->
                                         </ul>
                                         <!--begin::Navs-->
                                     </div>
@@ -184,7 +184,8 @@ License: For each use you must have a valid license purchased only from above li
                                                     <!--begin::Thead-->
                                                     <thead class="border-bottom border-gray-200 fs-6 fw-bold bg-lighten">
                                                         <tr>
-                                                            <th class="min-w-125px ps-9">Num</th>
+                                                            <th class="min-w-125px ps-9">Logo</th>
+                                                            <th class="min-w-125px ps-9">Matricula</th>
                                                             <th class="min-w-125px px-0">Nombre de la sede</th>
                                                             <th class="min-w-125px">Dirección</th>
                                                             <th class="min-w-125px">Correo o Contacto</th>
@@ -197,17 +198,43 @@ License: For each use you must have a valid license purchased only from above li
                                                     <!--begin::Tbody-->
                                                     <tbody class="fs-6 fw-semibold text-gray-600">
                                                         <?php
+                                                        
                                                         foreach ($data as $row) {
                                                             echo "<tr>";
-                                                            echo "<td class=" . "ps-9" . ">" . $row["IdSede"] . "</td>";
-                                                            echo "<td class=" . "ps-0" . ">" . $row["NombreSede"] . "</td>";
-                                                            echo "<td style=" . "margin-left: 10px;" . ">" . $row["Dirección"] . "</td>";
-                                                            echo "<td style=" . "margin-left: 10px;" . ">" . $row["CorreoContacto"] . "</td>";
-                                                            echo "<td style=" . "margin-left: 10px;" . ">" . $row["Telefono"] . "</td>";
-                                                            echo "<td style=" . "margin-left: 10px;" . ">" . $row["tiposede"] . "</td>";
-                                                            echo "<td style=" . "margin-left: 10px;" . "><a href=" . "index.php?c=sedes&a=edit_sede&id=" . $row["IdSede"] . ">Editar Sede</a></td>";
+                                                            echo "<td class='ps-9'>";
+                                                            
+                                                            // Verificamos si se obtuvo un logo desde la base de datos
+                                                            if (!empty($row["Logo"])) {
+                                                                // Mostramos la imagen directamente desde la base de datos
+                                                                $imageSrc = "data:image/jpeg;base64," . base64_encode($row["Logo"]);
+                                                                echo "<img src='{$imageSrc}' alt='Logo de la sede' style='max-width: 100px; max-height: 100px;' type='image/jpeg'>";
+                                                                echo "<script>console.log('Ruta de la imagen:', '{$imageSrc}');</script>";
+                                                            } else {
+                                                                // Si no hay un logo, mostramos un mensaje o un marcador de posición
+                                                                echo "Sin logo";
+                                                                echo "<script>console.log('Sin imagen');</script>";
+                                                            }
+                                                            
+                                                            echo "</td>";
+                                                            echo "<td class='ps-9'>" . $row["IdSede"] . "</td>";
+                                                            echo "<td class='ps-0'>" . $row["NombreSede"] . "</td>";
+                                                            echo "<td style='margin-left: 10px;'>" . $row["Dirección"] . "</td>";
+                                                            echo "<td style='margin-left: 10px;'>" . $row["CorreoContacto"] . "</td>";
+                                                            echo "<td style='margin-left: 10px;'>" . $row["Telefono"] . "</td>";
+                                                            echo "<td style='margin-left: 10px;'>" . $row["tiposede"] . "</td>";
+                                                            echo "<td style='margin-left: 10px;'><a href='index.php?c=sedes&a=edit_sede&id=" . $row["IdSede"] . "'>Editar Sede</a></td>";
                                                             echo "</tr>";
+                                                            
+                                                            // Imprimimos información sobre la imagen directamente
+                                                            echo "<script>console.log('Datos binarios de la imagen:', '" . base64_encode($row["Logo"]) . "');</script>";
                                                         }
+                                                        
+                                                        
+                                                        
+                                                        
+
+
+
                                                         ?>
                                                     </tbody>
                                                     <!--end::Tbody-->
@@ -263,7 +290,7 @@ License: For each use you must have a valid license purchased only from above li
                         <!--begin::Content-->
                         <div id="kt_account_settings_profile_details" class="collapse show">
                             <!--begin::Form-->
-                            <form id="kt_account_profile_details_form" class="form" action="?c=sedes&a=nueva_sede" method="post">
+                            <form id="kt_account_profile_details_form" class="form" action="?c=sedes&a=nueva_sede" method="post" enctype="multipart/form-data">
                                 <!--begin::Card body-->
                                 <div class="card-body border-top p-9">
                                     <!--begin::Input group-->
@@ -361,7 +388,7 @@ License: For each use you must have a valid license purchased only from above li
                                             <div class="row">
                                                 <!--begin::Col-->
                                                 <div class="col-lg-6 fv-row">
-                                                    <input type="text" name="telefono" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" required maxlength="10" />
+                                                <input type="text" name="telefono" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" required pattern="\d{10}" title="Ingrese un número de teléfono válido (10 dígitos)" maxlength="10"/>
                                                 </div>
                                                 <!--end::Col-->
                                             </div>
