@@ -358,17 +358,18 @@ class AlumnoController
 		}
 	}
 
-	public function exportarVacantes($idCarrera){
+	public function exportarVacantes($idCarrera)
+	{
 		$Vacante = new Vacantes(); // Suponiendo que tienes un modelo llamado Vacante que gestiona los datos de la tabla
-	
+
 		$vacantesData = $Vacante->obtenerVacantesPorCarrera($idCarrera); // Método para obtener los datos de las vacantes por ID de Carrera
-	
+
 		if ($vacantesData) {
 			$vacantes = json_decode($vacantesData, true);
-	
+
 			$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-	
+
 			$sheet->setCellValue('A1', 'Sede');
 			$sheet->setCellValue('B1', 'Carrera');
 			$sheet->setCellValue('C1', 'Proceso');
@@ -378,7 +379,7 @@ class AlumnoController
 			$sheet->setCellValue('G1', 'Numero de vacantes');
 			$sheet->setCellValue('H1', 'Numero de postulados');
 			$sheet->setCellValue('I1', 'Total de vacantes');
-	
+
 			$row = 2;
 			foreach ($vacantes as $vacante) {
 				$sheet->setCellValue('A' . $row, $vacante['Sede']);
@@ -392,38 +393,38 @@ class AlumnoController
 				$sheet->setCellValue('I' . $row, $vacante['Total de vacantes']);
 				$row++;
 			}
-	
+
 			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-			header('Content-Disposition: attachment;filename="vacantes_'.$idCarrera.'.xlsx"');
+			header('Content-Disposition: attachment;filename="vacantes_' . $idCarrera . '.xlsx"');
 			header('Cache-Control: max-age=0');
-	
+
 			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 			$writer->save('php://output');
 			exit();
 		} else {
 			echo json_encode(array("error" => "Error al obtener los datos de las vacantes"));
 		}
-		
 	}
 
-	public function exportarSede(){
+	public function exportarSede()
+	{
 		$Sedes = new Sede(); // Suponiendo que tienes un modelo llamado Vacante que gestiona los datos de la tabla
-	
+
 		$sedesData = $Sedes->obtenerSedes();
-	
+
 		if ($sedesData) {
 			$sede = json_decode($sedesData, true);
-	
+
 			$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-	
+
 			$sheet->setCellValue('A1', 'Matricula');
 			$sheet->setCellValue('B1', 'Nombre sede');
 			$sheet->setCellValue('C1', 'Dirección');
 			$sheet->setCellValue('D1', 'Correo');
 			$sheet->setCellValue('E1', 'Telefono');
 			$sheet->setCellValue('F1', 'Tipo de sede');
-	
+
 			$row = 2;
 			foreach ($sede as $sed) {
 				$sheet->setCellValue('A' . $row, $sed['Matricula']);
@@ -434,44 +435,44 @@ class AlumnoController
 				$sheet->setCellValue('F' . $row, $sed['Tipo de sede']);
 				$row++;
 			}
-	
+
 			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 			header('Content-Disposition: attachment;filename="sedes.xlsx"');
 			header('Cache-Control: max-age=0');
-	
+
 			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 			$writer->save('php://output');
 			exit();
 		} else {
 			echo json_encode(array("error" => "Error al obtener los datos de las sedes"));
 		}
-		
 	}
-	public function exportarPeriodo() {
+	public function exportarPeriodo()
+	{
 		$Periodos = new Periodo(); // Suponiendo que tienes un modelo llamado Periodo que gestiona los datos de la tabla
-	
+
 		$periodosData = $Periodos->obtenerPeriodos();
-	
+
 		if ($periodosData) {
 			$periodos = json_decode($periodosData, true);
-	
+
 			$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 			$sheet = $spreadsheet->getActiveSheet();
-	
+
 			$sheet->setCellValue('A1', 'Meses');
 			$sheet->setCellValue('B1', 'Año');
-	
+
 			$row = 2;
 			foreach ($periodos as $periodo) {
 				$sheet->setCellValue('A' . $row, $periodo['Meses']);
 				$sheet->setCellValue('B' . $row, $periodo['Año']);
 				$row++;
 			}
-	
+
 			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 			header('Content-Disposition: attachment;filename="periodos.xlsx"');
 			header('Cache-Control: max-age=0');
-	
+
 			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 			$writer->save('php://output');
 			exit();
@@ -479,5 +480,26 @@ class AlumnoController
 			echo json_encode(array("error" => "Error al obtener los datos de los periodos"));
 		}
 	}
-	
+
+	//controller
+	public function mostrar_busqueda()
+	{
+		// Obtener el dato de búsqueda desde la solicitud POST
+		$datoBusqueda = $_POST['busqueda'];
+
+		// Validar si se ingresó un dato de búsqueda
+		if (!empty($datoBusqueda)) {
+			// Crear una instancia del modelo de búsqueda
+			$modeloBusqueda = new Alumno();
+
+			// Llamar a la función en el modelo para realizar la búsqueda
+			$resultados = $modeloBusqueda->datos_busqueda($datoBusqueda);
+
+			// Mostrar los resultados (puedes implementar tu propia lógica para mostrar los resultados en la vista)
+			echo json_encode($resultados);
+		} else {
+			// Manejar el caso en el que no se proporcionó un dato de búsqueda
+			echo json_encode(["error" => "Por favor, ingresa un dato de búsqueda válido."]);
+		}
+	}
 }

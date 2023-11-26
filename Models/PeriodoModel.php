@@ -55,5 +55,49 @@ class Periodo {
             return json_encode(array("error" => "Error al obtener los datos de periodos"));
         }
     }
+
+	public function datos_busqueda($datoBusqueda)
+	{
+		// Convertir el dato de búsqueda a minúsculas
+		$datoBusqueda = strtolower($datoBusqueda);
+
+		// Dividir el dato de búsqueda en palabras clave
+		$palabrasClave = explode(' ', $datoBusqueda);
+		$condiciones = [];
+
+		// Crear condiciones para cada palabra clave
+		foreach ($palabrasClave as $palabra) {
+			$condiciones[] = "LOWER(CONCAT(Meses, Año)) LIKE '%$palabra%'";
+		}
+
+		// Unir condiciones con operador OR
+		$condicionesSql = implode(' OR ', $condiciones);
+
+		// Realizar la consulta para obtener los datos de búsqueda
+		$query = mysqli_query($this->db, "SELECT * FROM periodo WHERE $condicionesSql");
+
+		// Verificar si se encontraron resultados
+		if ($query) {
+			if ($query->num_rows > 0) {
+				while ($row = $query->fetch_assoc()) {
+					echo "<tr>";
+					echo "<td class='ps-9'>" . htmlentities($row["Meses"]) . "</td>";
+					echo "<td class='ps-0'>" . htmlentities($row["Año"]) . "</td>";
+					echo "<td style=" . "margin-left: 10px;" . "><a href=" . "?c=periodo&a=periodo_editado&id=".$row["IdPeriodo"]. ">Eliminar</a></td>";
+					echo "</tr>";
+
+					// Imprimimos información sobre la imagen directamente
+					echo "<script>console.log('Datos binarios de la imagen:', '" . base64_encode($row["Logo"]) . "');</script>";
+				}
+			} else {
+				// Si no se encontraron resultados, mostrar una alerta
+				echo "<script>alert('Sin datos');</script>";
+			}
+		} else {
+			// Si hubo un problema con la consulta, mostrar una alerta
+			echo "<script>alert('Hubo un problema con la búsqueda');</script>";
+		}
+	}
+
 	}
 

@@ -153,6 +153,48 @@ License: For each use you must have a valid license purchased only from above li
                                         <!--begin::Navs-->
                                     </div>
                                 </div>
+
+                                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                                    <!--begin::Input group-->
+                                    <div class="row mb-6">
+                                        <div class="d-flex my-4">
+                                            <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                                                <span>Buscar:</span>
+                                            </label>
+                                            <input type="text" id="busqueda" name="busqueda" class="form-control bg-transparent" required style="width: 70%; margin-left: -18%;">
+                                            <button type="button" id="buscarDatos" class="btn btn-sm btn-primary me-3" style="margin-left: 2%;">Buscar</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    // Cuando se hace clic en el botón "Buscar", hacer una solicitud AJAX para obtener los datos de los alumnos
+                                    $('#buscarDatos').click(function() {
+                                        var searchText = $('#busqueda').val();
+
+                                        // Verificar si se ha ingresado un texto de búsqueda
+                                        if (searchText !== '') {
+                                            // Realizar una solicitud AJAX al servidor para obtener los datos de los alumnos
+                                            $.ajax({
+                                                url: "index.php?c=sedes&a=mostrar_busqueda", // Reemplaza 'buscar_alumnos.php' con la ruta correcta a tu archivo PHP que realiza la búsqueda
+                                                method: 'POST',
+                                                data: {
+                                                    busqueda: searchText
+                                                },
+                                                success: function(response) {
+                                                    // Rellenar la tabla de alumnos con los datos recibidos
+                                                    $('#alumnos').html(response);
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error(error);
+                                                }
+                                            });
+                                        } else {
+                                            alert("Por favor, ingresa un texto de búsqueda antes de buscar.");
+                                        }
+                                    });
+                                </script>
+
                                 <!--begin::Referred users-->
                                 <div class="card">
                                     <!--begin::Header-->
@@ -196,13 +238,13 @@ License: For each use you must have a valid license purchased only from above li
                                                     </thead>
                                                     <!--end::Thead-->
                                                     <!--begin::Tbody-->
-                                                    <tbody class="fs-6 fw-semibold text-gray-600">
+                                                    <tbody id="alumnos" class="fs-6 fw-semibold text-gray-600">
                                                         <?php
-                                                        
+
                                                         foreach ($data as $row) {
                                                             echo "<tr>";
                                                             echo "<td class='ps-9'>";
-                                                            
+
                                                             // Verificamos si se obtuvo un logo desde la base de datos
                                                             if (!empty($row["Logo"])) {
                                                                 // Mostramos la imagen directamente desde la base de datos
@@ -214,7 +256,7 @@ License: For each use you must have a valid license purchased only from above li
                                                                 echo "Sin logo";
                                                                 echo "<script>console.log('Sin imagen');</script>";
                                                             }
-                                                            
+
                                                             echo "</td>";
                                                             echo "<td class='ps-9'>" . $row["IdSede"] . "</td>";
                                                             echo "<td class='ps-0'>" . $row["NombreSede"] . "</td>";
@@ -224,14 +266,14 @@ License: For each use you must have a valid license purchased only from above li
                                                             echo "<td style='margin-left: 10px;'>" . $row["tiposede"] . "</td>";
                                                             echo "<td style='margin-left: 10px;'><a href='index.php?c=sedes&a=edit_sede&id=" . $row["IdSede"] . "'>Editar Sede</a></td>";
                                                             echo "</tr>";
-                                                            
+
                                                             // Imprimimos información sobre la imagen directamente
                                                             echo "<script>console.log('Datos binarios de la imagen:', '" . base64_encode($row["Logo"]) . "');</script>";
                                                         }
-                                                        
-                                                        
-                                                        
-                                                        
+
+
+
+
 
 
 
@@ -388,7 +430,7 @@ License: For each use you must have a valid license purchased only from above li
                                             <div class="row">
                                                 <!--begin::Col-->
                                                 <div class="col-lg-6 fv-row">
-                                                <input type="text" name="telefono" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" required pattern="\d{10}" title="Ingrese un número de teléfono válido (10 dígitos)" maxlength="10"/>
+                                                    <input type="text" name="telefono" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" required pattern="\d{10}" title="Ingrese un número de teléfono válido (10 dígitos)" maxlength="10" />
                                                 </div>
                                                 <!--end::Col-->
                                             </div>
